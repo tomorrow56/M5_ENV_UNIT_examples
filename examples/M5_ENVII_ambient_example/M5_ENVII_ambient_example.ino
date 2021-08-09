@@ -18,8 +18,8 @@
 #include <Ambient.h>
 Ambient ambient;
 
-unsigned int channelId = 39951; // AmbientのチャネルID
-const char* writeKey = "856769f30050fb47"; // ライトキー
+unsigned int channelId = xxxxx; // AmbientのチャネルID
+const char* writeKey = "xxxxxxxxxxxxxxxx"; // ライトキー
 
 SHT3X sht30;
 Adafruit_BMP280 bme;
