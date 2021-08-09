@@ -33,7 +33,7 @@ Adafruit_BMP280 bme;
 float tmp = 0.0;
 float hum = 0.0;
 float pressure = 0.0;
-float discomfort = 0.0;
+float disconfort = 0.0;
 float preVal = 0.0;
 
 // WiFi instanse
@@ -121,13 +121,13 @@ void loop() {
   if(sht30.get()==0){
     tmp = sht30.cTemp;
     hum = sht30.humidity;
-    discomfort = (0.81 * tmp) + ((0.01 * hum) * ((0.99 * tmp) -14.3)) + 46.3;
+    disconfort = (0.81 * tmp) + ((0.01 * hum) * ((0.99 * tmp) -14.3)) + 46.3;
   }
 //  Serial.printf("Temperatura: %2.2f*C  Humidity: %0.2f%%  Pressure: %0.2fPa\r\n", tmp, hum, pressure);
   M5.Lcd.setTextSize(2);
   M5.Lcd.setTextColor(CYAN, BLACK);
 
-//  M5.Lcd.printf("Temp: %2.1f  \r\nHumi: %2.1f%%  \r\nPressure:%4.1fPa\r\ndiscomfort:%2.1f \r\n", tmp, hum, pressure / 100, discomfort);
+//  M5.Lcd.printf("Temp: %2.1f  \r\nHumi: %2.1f%%  \r\nPressure:%4.1fPa\r\ndisconfort:%2.1f \r\n", tmp, hum, pressure / 100, discomfort);
   M5.Lcd.setCursor(x_posi, y_posi);
   M5.Lcd.printf("Temperature: %2.1f C", tmp);
   M5.Lcd.setCursor(x_posi, y_posi + y_interval);
@@ -135,37 +135,37 @@ void loop() {
   M5.Lcd.setCursor(x_posi, y_posi + y_interval * 2);
   M5.Lcd.printf("Pressure   : %4.1f hPa", pressure / 100);
   M5.Lcd.setCursor(x_posi, y_posi + y_interval * 3);
-  M5.Lcd.printf("Discomfort : %2.1f", discomfort);
+  M5.Lcd.printf("Disconfort : %2.1f", disconfort);
 
-//  mtr.plotNeedle(discomfort, 0);
+//  mtr.plotNeedle(disconfort, 0);
 
-  if(round(discomfort) > round(preVal)){
-    for(int i = round(preVal); i <= round(discomfort); i++){
+  if(round(disconfort) > round(preVal)){
+    for(int i = round(preVal); i <= round(disconfort); i++){
       mtr.plotNeedle(i, 0);
       delay(20);
     }
-  }else if(round(discomfort) < round(preVal)){
-    for(int i = round(preVal); i >= round(discomfort); i--){
+  }else if(round(disconfort) < round(preVal)){
+    for(int i = round(preVal); i >= round(disconfort); i--){
       mtr.plotNeedle(i, 0);
       delay(20);
     }
   }
 
-  preVal = discomfort;
+  preVal = disconfort;
 
   // 温度、湿度、気圧の値をAmbientに送信する
   ambient.set(1, String(tmp).c_str());
   ambient.set(2, String(hum).c_str());
   ambient.set(3, String(pressure / 100).c_str());
-  ambient.set(4, String(discomfort).c_str());
+  ambient.set(4, String(disconfort).c_str());
   ambient.send();
 
 /*  
   if(discomfort <= 75){
     M5.Lcd.fillRect(279, 0, 40, 40, GREEN);
-  }else if(discomfort <= 80){
+  }else if(disconfort <= 80){
     M5.Lcd.fillRect(279, 0, 40, 40, YELLOW);
-  }else if(discomfort <= 85){
+  }else if(disconfort <= 85){
     M5.Lcd.fillRect(279, 0, 40, 40, ORANGE);
   }else{
     M5.Lcd.fillRect(279, 0, 40, 40, RED);
