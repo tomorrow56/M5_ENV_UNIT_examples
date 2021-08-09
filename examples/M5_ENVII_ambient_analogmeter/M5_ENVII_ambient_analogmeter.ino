@@ -24,8 +24,8 @@ uint8_t x_posi = 30;
 uint8_t y_posi = 140;
 uint8_t y_interval = 20;
 
-unsigned int channelId = 39951; // AmbientのチャネルID
-const char* writeKey = "856769f30050fb47"; // ライトキー
+unsigned int channelId = xxxxx; // AmbientのチャネルID
+const char* writeKey = "xxxxxxxxxxxxxxxx"; // ライトキー
 
 SHT3X sht30;
 Adafruit_BMP280 bme;
