@@ -19,8 +19,8 @@ uint8_t x_posi = 30;
 uint8_t y_posi = 140;
 uint8_t y_interval = 20;
 
-unsigned int channelId = 39951; // Ambient channel ID
-const char* writeKey = "856769f30050fb47"; // write key
+unsigned int channelId = 00000; // Ambient channel ID
+const char* writeKey = "xxxxxxxxxxxxxxxx"; // write key
 
 SHT3X sht30;
 QMP6988 qmp;
