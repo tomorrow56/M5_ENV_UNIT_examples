@@ -14,14 +14,16 @@
 #include <Ambient.h>
 Ambient ambient;
 
+boolean sendFlag = false;
+
 #include "analogmeter.h"
 ANALOGMETER mtr;
 uint8_t x_posi = 30;
 uint8_t y_posi = 140;
 uint8_t y_interval = 20;
 
-unsigned int channelId = 00000; // Ambient channel ID
-const char* writeKey = "xxxxxxxxxxxxxxxx"; // write key
+unsigned int channelId = 39951; // Ambient channel ID
+const char* writeKey = "856769f30050fb47"; // write key
 
 SHT3X sht30;
 Adafruit_BMP280 bme;
@@ -42,37 +44,38 @@ void task0(void* arg) {
   while (1) {
     M5.update();  // Key scan
 
-    pressure = bme.readPressure();
-    if(sht30.get()==0){
-      tmp = sht30.cTemp;
-      hum = sht30.humidity;
-      disconfort = (0.81 * tmp) + ((0.01 * hum) * ((0.99 * tmp) -14.3)) + 46.3;
-    }
-    M5.Lcd.setTextSize(2);
-    M5.Lcd.setTextColor(CYAN, BLACK);
-
-    M5.Lcd.setCursor(x_posi, y_posi);
-    M5.Lcd.printf("Temperature: %2.1f C", tmp);
-    M5.Lcd.setCursor(x_posi, y_posi + y_interval);
-    M5.Lcd.printf("Humidity   : %2.1f %%", hum);
-    M5.Lcd.setCursor(x_posi, y_posi + y_interval * 2);
-    M5.Lcd.printf("Pressure   : %4.1f hPa", pressure / 100);
-    M5.Lcd.setCursor(x_posi, y_posi + y_interval * 3);
-    M5.Lcd.printf("Disconfort : %2.1f", disconfort);
-
-    if(round(disconfort) > round(preVal)){
-      for(int i = round(preVal); i <= round(disconfort); i++){
-        mtr.plotNeedle(i, 0);
-        delay(20);
+    if(sendFlag == false){
+      pressure = bme.readPressure();
+      if(sht30.get()==0){
+        tmp = sht30.cTemp;
+        hum = sht30.humidity;
+        disconfort = (0.81 * tmp) + ((0.01 * hum) * ((0.99 * tmp) -14.3)) + 46.3;
       }
-    }else if(round(disconfort) < round(preVal)){
-      for(int i = round(preVal); i >= round(disconfort); i--){
-        mtr.plotNeedle(i, 0);
-        delay(20);
+      M5.Lcd.setTextSize(2);
+      M5.Lcd.setTextColor(CYAN, BLACK);
+
+      M5.Lcd.setCursor(x_posi, y_posi);
+      M5.Lcd.printf("Temperature: %2.1f C", tmp);
+      M5.Lcd.setCursor(x_posi, y_posi + y_interval);
+      M5.Lcd.printf("Humidity   : %2.1f %%", hum);
+      M5.Lcd.setCursor(x_posi, y_posi + y_interval * 2);
+      M5.Lcd.printf("Pressure   : %4.1f hPa", pressure / 100);
+      M5.Lcd.setCursor(x_posi, y_posi + y_interval * 3);
+      M5.Lcd.printf("Disconfort : %2.1f", disconfort);
+
+      if(round(disconfort) > round(preVal)){
+        for(int i = round(preVal); i <= round(disconfort); i++){
+          mtr.plotNeedle(i, 0);
+          delay(20);
+        }
+      }else if(round(disconfort) < round(preVal)){
+        for(int i = round(preVal); i >= round(disconfort); i--){
+          mtr.plotNeedle(i, 0);
+          delay(20);
+        }
       }
+      preVal = disconfort;
     }
-    preVal = disconfort;
-    
     vTaskDelay(200);
   }
 }
@@ -80,6 +83,9 @@ void task0(void* arg) {
 // send data to ambient https://ambidata.io/
 void task1(void* arg) {
   while (1) {
+    sendFlag = true;
+    vTaskDelay(1000);
+
     ambient.set(1, String(tmp).c_str());
     ambient.set(2, String(hum).c_str());
     ambient.set(3, String(pressure / 100).c_str());
@@ -91,8 +97,9 @@ void task1(void* arg) {
     vTaskDelay(1000);
     M5.Lcd.setTextColor(BLACK, BLACK);
     M5.Lcd.drawCentreString("DATA SENDING...", 160, 225, 1);
+    sendFlag = false;
 
-    vTaskDelay((1000 * 60 * 10) - 1000);
+    vTaskDelay((1000 * 60 * 10) - 2000);
   }
 }
 
